@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="popup.css" />
+</head>
+
+<body>
+    <div id="popup-content" class="popup-content">
+        <h1 class="title">Tab Audio Device</h1>
+
+        <div class="button-container">
+            <button class="button btn-select">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    class="icon">
+                    <path
+                        d="M3 10.5V13.5C3 14.6046 3.89543 15.5 5 15.5H7L14 19.5V4.5L7 8.5H5C3.89543 8.5 3 9.39543 3 10.5Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M17 8C18.1046 8.94618 18.9116 10.4471 18.9116 12.0263C18.9116 13.6055 18.1046 15.1064 17 16.0526"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M19.7126 5C21.4461 6.54282 22.5366 8.88136 22.5366 11.5C22.5366 14.1186 21.4461 16.4572 19.7126 18"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Select Device
+            </button>
+            <button class="button btn-reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    class="icon">
+                    <path
+                        d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M15 9L9 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                Reset Device
+            </button>
+        </div>
+
+        <div id="auto-change-container" class="button-container auto-change-section">
+            <button class="button btn-auto-change">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    class="icon toggle-icon">
+                    <path d="M17 5L7 12L17 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <span id="auto-change-text">Enable automatic switching</span>
+            </button>
+            <div class="auto-change-info">
+                <p>This mode will automatically apply the selected audio device to new audios/videos when possible on
+                    this tab only.<br />
+                    Sometimes it may not work due to security restrictions.</p>
+            </div>
+        </div>
+
+        <div id="error-messages" class="error-messages">
+            <div id="error-message-setsinkid" class="hidden">
+                <p class="highlight">Experimental Audio Output Devices API needs to be enabled.</p>
+                <p>This requires enabling a flag in Firefox's advanced config options.</p>
+                <p>Set <span class="code">media.setsinkid.enabled</span> in <span class="local-link">about:config</span>
+                    to <span class="code">true</span>.</p>
+            </div>
+            <div id="error-message-need-interaction" class="hidden">
+                <p class="highlight">Click anywhere on the page before selecting an audio device.</p>
+                <p>To use the Audio Output Devices API, you need to interact with the page first. A simple click on the
+                    page will do.</p>
+            </div>
+            <div id="error-message-no-elements" class="hidden">
+                <p class="highlight">No audio or video elements were detected on this page.</p>
+            </div>
+            <div id="error-message-no-device-selected" class="hidden">
+                <p class="highlight">Please select an audio device before enabling automatic switching.</p>
+            </div>
+            <div id="error-unknown" class="hidden">
+                <p class="highlight">An unexpected error occurred. Please help us improve by copying the error details
+                    below and filing an issue.</p>
+                <textarea id="error-unknown-logs"></textarea>
+            </div>
+        </div>
+
+        <p class="footer-text">Tab Audio Device Selector v1.0</p>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>

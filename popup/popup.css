@@ -1,0 +1,248 @@
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/Inter-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/Inter-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/Inter-SemiBold.woff2') format('woff2');
+}
+
+:root {
+  --primary-color: #4F46E5;
+  --primary-hover: #4338CA;
+  --secondary-color: #64748B;
+  --secondary-hover: #475569;
+  --success-color: #10B981;
+  --success-hover: #059669;
+  --background-color: #F8FAFC;
+  --error-color: #EF4444;
+  --text-color: #0F172A;
+  --text-light: #64748B;
+  --border-radius: 8px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --transition: all 0.2s ease-in-out;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+}
+
+* {
+  scrollbar-width: none !important;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 280px;
+  background-color: var(--background-color);
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+.popup-content {
+  font-size: 0.9rem;
+  padding: 16px;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 80px;
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid var(--text-light);
+  border-radius: var(--border-radius);
+  font-family: inherit;
+  resize: none;
+}
+
+.error-header {
+  margin-top: 16px;
+  border-radius: var(--border-radius);
+  background-color: var(--error-color);
+  text-align: center;
+  padding: 8px;
+  color: white;
+}
+
+.error-header p {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.local-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.local-link:hover {
+  text-decoration: underline;
+}
+
+.error-messages {
+  font-size: 0.85rem;
+  margin-top: 12px;
+  border-radius: var(--border-radius);
+  background-color: #FEE2E2;
+  border: 1px solid #FECACA;
+  color: #B91C1C;
+  overflow: hidden;
+}
+
+.error-messages > div {
+  padding: 12px;
+}
+
+.error-messages p {
+  margin-bottom: 8px;
+}
+
+.error-messages p:last-child {
+  margin-bottom: 0;
+}
+
+.highlight {
+  font-weight: 600;
+}
+
+.footer-text {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-top: 16px;
+  text-align: center;
+}
+
+.code {
+  font-family: 'Monaco', 'Consolas', monospace;
+  background-color: #E2E8F0;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: #334155;
+}
+
+.hidden {
+  display: none;
+}
+
+.button {
+  border-radius: var(--border-radius);
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  width: 100%;
+}
+
+.button .icon {
+  flex-shrink: 0;
+}
+
+.btn-select {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-select:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-reset {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.btn-reset:hover {
+  background-color: var(--secondary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-select:active, .btn-reset:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 3px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-auto-change {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.btn-auto-change:hover {
+  background-color: var(--secondary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-auto-change.active {
+  background-color: var(--success-color);
+}
+
+.btn-auto-change.active:hover {
+  background-color: var(--success-hover);
+}
+
+.auto-change-section {
+  border-top: 1px solid #E2E8F0;
+  padding-top: 16px;
+}
+
+.auto-change-info {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-top: 8px;
+  background-color: rgba(229, 231, 235, 0.5);
+  padding: 8px;
+  border-radius: var(--border-radius);
+}
+
+.toggle-icon {
+  transition: var(--transition);
+}
+
+.btn-auto-change.active .toggle-icon {
+  transform: rotate(90deg);
+}
