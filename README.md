@@ -2,6 +2,8 @@
 
 A Firefox extension that lets you choose which audio device plays sound from each tab. Simple, useful, and works automatically when you change pages.
 
+![Tab Audio Device Selector](screenshots/tab-audio-device-selector.png)
+
 ## Features
 
 - Select different audio output devices for different browser tabs
