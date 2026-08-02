@@ -8,7 +8,10 @@
 
 <body>
     <div id="popup-content" class="popup-content">
-        <h1 class="title">Tab Audio Device</h1>
+        <h1 class="title">
+            <img src="../icons/icon32.png" alt="" class="title-logo" width="24" height="24">
+            Tab Audio Device
+        </h1>
 
         <div class="button-container">
             <button class="button btn-select">
@@ -42,18 +45,39 @@
         </div>
 
         <div id="auto-change-container" class="button-container auto-change-section">
-            <button class="button btn-auto-change">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    class="icon toggle-icon">
-                    <path d="M17 5L7 12L17 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
-                <span id="auto-change-text">Enable automatic switching</span>
-            </button>
-            <div class="auto-change-info">
+            <div class="auto-change-controls is-disabled"
+                data-tooltip="Select an audio device first to enable automatic switching.">
+                <div class="btn-auto-change-wrapper">
+                    <button class="button btn-auto-change" disabled>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                            class="icon toggle-icon">
+                            <path d="M21 12A9 9 0 0 0 6.5 5.3L3 8" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M3 3V8H8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M3 12A9 9 0 0 0 17.5 18.7L21 16" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M21 21V16H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        <span id="auto-change-text">Enable automatic switching</span>
+                    </button>
+                </div>
+                <button class="button btn-auto-info" type="button" aria-expanded="false"
+                    aria-controls="auto-change-info" aria-label="About automatic switching"
+                    title="About automatic switching">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        class="icon">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" />
+                        <path d="M12 11V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="8" r="1" fill="currentColor" />
+                    </svg>
+                </button>
+            </div>
+            <div id="auto-change-info" class="auto-change-info hidden">
                 <p>This mode will automatically apply the selected audio device to new audios/videos when possible on
-                    this tab only.<br />
-                    Sometimes it may not work due to security restrictions.</p>
+                    this tab only.</p>
+                <p>Sometimes it may not work due to security restrictions.</p>
             </div>
         </div>
 

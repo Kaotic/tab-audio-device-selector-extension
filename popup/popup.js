@@ -49,6 +49,7 @@ function tabEntry() {
      */
     function updateAutoChangeButton() {
         const button = document.getElementsByClassName('btn-auto-change')[0];
+        const controls = document.getElementsByClassName('auto-change-controls')[0];
         const textSpan = document.getElementById('auto-change-text');
 
         if (autoChangeEnabled) {
@@ -61,6 +62,8 @@ function tabEntry() {
 
         // Enable/disable the button based on whether a device is selected
         button.disabled = !hasSelectedDevice;
+        controls.classList.toggle('is-disabled', !hasSelectedDevice);
+        controls.classList.toggle('is-active', autoChangeEnabled);
     }
 
     document.addEventListener('click', (el) => {
@@ -108,6 +111,15 @@ function tabEntry() {
             }).catch(reportClickError);
         }
 
+        function toggleAutoChangeInfo() {
+            const info = document.getElementById('auto-change-info');
+            const infoButton = document.getElementsByClassName('btn-auto-info')[0];
+            const isHidden = info.classList.toggle('hidden');
+
+            infoButton.classList.toggle('active', !isHidden);
+            infoButton.setAttribute('aria-expanded', String(!isHidden));
+        }
+
         // Determine which action to perform based on the clicked element
         let actionTarget = el.target;
 
@@ -126,6 +138,9 @@ function tabEntry() {
             browser.tabs.query({ active: true, currentWindow: true })
                 .then(buttonReset)
                 .catch(reportClickError);
+        }
+        else if (actionTarget && actionTarget.classList.contains('btn-auto-info')) {
+            toggleAutoChangeInfo();
         }
         else if (actionTarget && actionTarget.classList.contains('btn-auto-change')) {
             browser.tabs.query({ active: true, currentWindow: true })
