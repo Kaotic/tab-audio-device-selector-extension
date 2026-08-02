@@ -3,7 +3,7 @@
     "description": "Take control of your browser's audio routing with customizable per-tab output device selection",
     "homepage_url": "https://github.com/Kaotic/tab-audio-device-selector-extension",
     "manifest_version": 2,
-    "version": "1.0",
+    "version": "1.1",
     "icons": {
         "16": "icons/icon16.png",
         "32": "icons/icon32.png",
