@@ -5,10 +5,7 @@ function tabEntry() {
     let autoChangeEnabled = false; // Variable to track if automatic mode is enabled
     let hasSelectedDevice = false; // Variable to track if a device is selected
 
-    // Listener for device selection and error messages
-    browser.runtime.onMessage.addListener(handleMessages);
-
-    // Get current state
+    // Get current state from the content script (source of truth lives in the tab)
     browser.tabs.query({ active: true, currentWindow: true })
         .then(tabs => {
             return browser.tabs.sendMessage(tabs[0].id, { command: "getStatus" });
@@ -25,15 +22,25 @@ function tabEntry() {
         });
 
     /**
-     * Function to handle messages from the extension
-     * @param {Object} message - The message from the extension
+     * Handle a response from the content script, if the popup is still open.
+     * @param {Object} response
      */
-    function handleMessages(message) {
-        if (message.message === 'DeviceSelected') {
+    function handleContentResponse(response) {
+        if (!response) return;
+
+        if (response.message === 'DeviceSelected') {
             hasSelectedDevice = true;
             updateAutoChangeButton();
-        } else {
-            reportError(message);
+            return;
+        }
+
+        if (response.message === 'NotAllowedError' || response.message === 'Reset') {
+            // Cancelled picker / reset — nothing to show in the error panel
+            return;
+        }
+
+        if (response.message) {
+            reportError(response);
         }
     }
 
@@ -57,19 +64,29 @@ function tabEntry() {
     }
 
     document.addEventListener('click', (el) => {
-        function reportError(err) {
+        function reportClickError(err) {
+            // Popup may have been closed while waiting, ignore dead connection noise
+            if (err && /Receiving end does not exist|Could not establish connection/i.test(String(err))) {
+                console.debug('[TADS] Popup closed while waiting for response');
+                return;
+            }
             console.error(`[TADS] ${err}`);
         }
 
         function buttonSelect(tabs) {
-            browser.tabs.sendMessage(tabs[0].id, { command: "select" });
+            browser.tabs.sendMessage(tabs[0].id, { command: "select" })
+                .then(handleContentResponse)
+                .catch(reportClickError);
         }
 
         function buttonReset(tabs) {
-            browser.tabs.sendMessage(tabs[0].id, { command: "reset" });
-            hasSelectedDevice = false;
-            autoChangeEnabled = false;
-            updateAutoChangeButton();
+            browser.tabs.sendMessage(tabs[0].id, { command: "reset" })
+                .then(() => {
+                    hasSelectedDevice = false;
+                    autoChangeEnabled = false;
+                    updateAutoChangeButton();
+                })
+                .catch(reportClickError);
         }
 
         function toggleAutoChange(tabs) {
@@ -88,7 +105,7 @@ function tabEntry() {
             browser.tabs.sendMessage(tabs[0].id, {
                 command: "toggleAutoChange",
                 enabled: autoChangeEnabled
-            });
+            }).catch(reportClickError);
         }
 
         // Determine which action to perform based on the clicked element
@@ -103,17 +120,17 @@ function tabEntry() {
         if (actionTarget && actionTarget.classList.contains('btn-select')) {
             browser.tabs.query({ active: true, currentWindow: true })
                 .then(buttonSelect)
-                .catch(reportError);
+                .catch(reportClickError);
         }
         else if (actionTarget && actionTarget.classList.contains('btn-reset')) {
             browser.tabs.query({ active: true, currentWindow: true })
                 .then(buttonReset)
-                .catch(reportError);
+                .catch(reportClickError);
         }
         else if (actionTarget && actionTarget.classList.contains('btn-auto-change')) {
             browser.tabs.query({ active: true, currentWindow: true })
                 .then(toggleAutoChange)
-                .catch(reportError);
+                .catch(reportClickError);
         }
     });
 }

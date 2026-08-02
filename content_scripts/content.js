@@ -21,50 +21,53 @@
     }
 
     /**
-     * Function to select the audio output
+     * Function to select the audio output.
+     * Returns a Promise so the caller (popup) can update its UI if still open.
+     * Selection itself never depends on the popup being alive.
      * @param {NodeList} elements - The elements to select the audio output for
+     * @returns {Promise<{message: string, deviceId?: string, deviceLabel?: string}>}
      */
     function selectAudioOutput(elements) {
-        if (navigator.mediaDevices.selectAudioOutput) {
-            navigator.mediaDevices.selectAudioOutput()
-                .then(output => {
-                    console.debug('[TADS] Selected device:', output);
-
-                    selectedAudioDeviceId = output.deviceId;
-                    setElementsSinkId(elements, output.deviceId);
-
-                    // Add event listeners if auto mode is enabled
-                    if (autoChangeEnabled) {
-                        addMediaEventListeners(elements);
-                    }
-
-                    // Inform the popup that the device has been changed
-                    browser.runtime.sendMessage({
-                        message: 'DeviceSelected',
-                        deviceId: output.deviceId,
-                        deviceLabel: output.label
-                    });
-                })
-                .catch(err => {
-                    if (err.name == 'InvalidStateError') {
-                        browser.runtime.sendMessage({ message: 'InvalidStateError' });
-                        console.error('[TADS] User interaction required before accessing audio devices');
-                        console.warn('[TADS] Click anywhere on the page before trying again');
-                    }
-                    else if (err.name == 'NotAllowedError') {
-                        console.error('[TADS] Audio device selection was denied by system or user')
-                    }
-                    else {
-                        browser.runtime.sendMessage({ message: err.name });
-                        console.error(`[TADS][ERROR] ${err.name}: ${err.message}`);
-                    }
-                });
-        }
-        else {
-            browser.runtime.sendMessage({ message: 'SetSinkIdError' });
+        if (!navigator.mediaDevices.selectAudioOutput) {
             console.error('[TADS] setSinkId option is not enabled!');
-            console.warn('[TADS] You need to enable "media.setsinkid.enabled" in the about:config settings!')
+            console.warn('[TADS] You need to enable "media.setsinkid.enabled" in the about:config settings!');
+            return Promise.resolve({ message: 'SetSinkIdError' });
         }
+
+        return navigator.mediaDevices.selectAudioOutput()
+            .then(output => {
+                console.debug('[TADS] Selected device:', output);
+
+                selectedAudioDeviceId = output.deviceId;
+                setElementsSinkId(elements, output.deviceId);
+
+                // Add event listeners if auto mode is enabled
+                if (autoChangeEnabled) {
+                    addMediaEventListeners(elements);
+                }
+
+                return {
+                    message: 'DeviceSelected',
+                    deviceId: output.deviceId,
+                    deviceLabel: output.label
+                };
+            })
+            .catch(err => {
+                if (err.name === 'InvalidStateError') {
+                    console.error('[TADS] User interaction required before accessing audio devices');
+                    console.warn('[TADS] Click anywhere on the page before trying again');
+                    return { message: 'InvalidStateError' };
+                }
+
+                if (err.name === 'NotAllowedError') {
+                    // User cancelled the system picker or denied access — not an error for the UI
+                    console.error('[TADS] Audio device selection was denied by system or user');
+                    return { message: 'NotAllowedError' };
+                }
+
+                console.error(`[TADS][ERROR] ${err.name}: ${err.message}`);
+                return { message: err.name };
+            });
     }
 
     /**
@@ -276,38 +279,45 @@
         }).observe(document, { childList: true, subtree: true });
     }
 
-    // Handle messages from the extension
+    // Handle messages from the extension (popup). All replies go through the returned Promise
+    // so nothing breaks if the popup closes before the operation finishes.
     browser.runtime.onMessage.addListener(message => {
+        // Status can be queried even when there are no media elements yet
+        if (message.command === 'getStatus') {
+            return Promise.resolve({
+                autoChangeEnabled: autoChangeEnabled,
+                hasSelectedDevice: !!selectedAudioDeviceId
+            });
+        }
+
         let elements = document.querySelectorAll('audio, video');
-        if (elements.length) {
-            if (message.command == 'select') {
-                selectAudioOutput(elements);
-            }
-            else if (message.command == 'reset') {
-                selectedAudioDeviceId = '';
-                autoChangeEnabled = false;
-                setElementsSinkId(elements, '');
+        if (!elements.length) {
+            return Promise.resolve({ message: 'NoElementsError' });
+        }
+
+        if (message.command === 'select') {
+            return selectAudioOutput(elements);
+        }
+
+        if (message.command === 'reset') {
+            selectedAudioDeviceId = '';
+            autoChangeEnabled = false;
+            setElementsSinkId(elements, '');
+            removeMediaEventListeners(elements);
+            return Promise.resolve({ message: 'Reset' });
+        }
+
+        if (message.command === 'toggleAutoChange') {
+            autoChangeEnabled = message.enabled;
+
+            if (autoChangeEnabled && selectedAudioDeviceId) {
+                addMediaEventListeners(elements);
+            } else {
                 removeMediaEventListeners(elements);
             }
-            else if (message.command == 'toggleAutoChange') {
-                autoChangeEnabled = message.enabled;
 
-                if (autoChangeEnabled && selectedAudioDeviceId) { // If enabled, add event listeners to existing media elements
-                    addMediaEventListeners(elements);
-                } else {
-                    removeMediaEventListeners(elements);
-                }
-
-                return Promise.resolve({ autoChangeEnabled: autoChangeEnabled });
-            }
-            else if (message.command == 'getStatus') {
-                return Promise.resolve({
-                    autoChangeEnabled: autoChangeEnabled,
-                    hasSelectedDevice: !!selectedAudioDeviceId
-                });
-            }
+            return Promise.resolve({ autoChangeEnabled: autoChangeEnabled });
         }
-        else browser.runtime.sendMessage({ message: 'NoElementsError' });
     });
 
     // Set up detection for all sites
